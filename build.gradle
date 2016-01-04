@@ -5,23 +5,28 @@ buildscript {
 	repositories {
 		mavenCentral()
 	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath('io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE')
-	}
+//	dependencies {
+//		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+//		classpath('io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE')
+//	}
 }
 
 
 apply plugin: 'java'
-apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'maven'
 
-apply plugin: 'spring-boot'
-apply plugin: 'io.spring.dependency-management'
+
+//apply plugin: 'spring-boot'
+//apply plugin: 'io.spring.dependency-management'
 
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
+	gradleVersion = '2.1'
+}
 
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
@@ -36,61 +41,65 @@ if (!hasProperty('mainClass')) {
 File buildDir = file(".");
 
 Properties props = new Properties()
-props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/com/neuronrobotics/bowlerstudio/build.properties"))
+props.load(new FileInputStream(buildDir.getAbsolutePath()+"/src/main/resources/com/neuronrobotics/bowlerkernel/build.properties"))
 
-		boolean is64Bit() {
-			////System.out.println("Arch: "+getOsArch());
-			return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
-		}
-		 boolean isARM() {
-			return getOsArch().startsWith("arm");
-		}
-		 boolean isCortexA8(){
-			if(isARM()){
-				//TODO check for cortex a8 vs arm9 generic
-				return true;
-			}
-			return false;
-		}
-		 boolean isWindows() {
-			////System.out.println("OS name: "+getOsName());
-			return getOsName().toLowerCase().startsWith("windows") ||getOsName().toLowerCase().startsWith("microsoft") || getOsName().toLowerCase().startsWith("ms");
-		}
-		
-		 boolean isLinux() {
-			return getOsName().toLowerCase().startsWith("linux");
-		}
-		
-		 boolean isOSX() {
-			return getOsName().toLowerCase().startsWith("mac");
-		}
-		
-		 String getExtension() {
-			if(isWindows()) {
-				return ".dll";
-			}
-			
-			if(isLinux()) {
-				return ".so";
-			}
-			
-			if(isOSX()) {
-				return ".jnilib";
-			}
-			
-			return "";
-		}
-		
-		String getOsName() {	
-			return System.getProperty("os.name");
-		}
-		
-		String getOsArch() {
-			return System.getProperty("os.arch");
-		}
+boolean is64Bit() {
+	////System.out.println("Arch: "+getOsArch());
+	return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
+}
+ boolean isARM() {
+	return getOsArch().startsWith("arm");
+}
+ boolean isCortexA8(){
+	if(isARM()){
+		//TODO check for cortex a8 vs arm9 generic
+		return true;
+	}
+	return false;
+}
+ boolean isWindows() {
+	////System.out.println("OS name: "+getOsName());
+	return getOsName().toLowerCase().startsWith("windows") ||getOsName().toLowerCase().startsWith("microsoft") || getOsName().toLowerCase().startsWith("ms");
+}
+
+ boolean isLinux() {
+	return getOsName().toLowerCase().startsWith("linux");
+}
+
+ boolean isOSX() {
+	return getOsName().toLowerCase().startsWith("mac");
+}
+
+ String getExtension() {
+	if(isWindows()) {
+		return ".dll";
+	}
+	
+	if(isLinux()) {
+		return ".so";
+	}
+	
+	if(isOSX()) {
+		return ".jnilib";
+	}
+	
+	return "";
+}
+
+String getOsName() {	
+	return System.getProperty("os.name");
+}
+
+String getOsArch() {
+	return System.getProperty("os.arch");
+}
+
+//https://oss.sonatype.org/service/local/repositories/releases/content/com/neuronrobotics/nrjavaserial/3.10.1/nrjavaserial-3.10.1.jar
+
 
 repositories {
 	mavenCentral()
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/'  }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/'  }
 	maven { url 'http://repo.jenkins-ci.org/public/' }
 	maven { url 'http://clojars.org/repo' }
@@ -100,23 +109,17 @@ repositories {
 	}
 }
 
-task wrapper(type: Wrapper) { gradleVersion = '2.1' }
-
 dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.10'
+	compile 'gov.nist.math:jama:1.0.2'
 
 	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6'
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6', classifier: 'sources'
 
 	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
-	compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT', classifier: 'sources'
 
 	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7';
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'sources';
-	compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.7', classifier: 'javadoc';
 
 	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6'
-	compile group: 'org.controlsfx', name: 'controlsfx', version: '8.0.6', classifier: 'sources'
 	compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.7'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
@@ -136,13 +139,18 @@ dependencies {
 	compile 'org.clojure:clojure:1.7.0'
 	compile 'org.clojure:tools.nrepl:0.2.10'
 	compile "overtone:overtone:0.9.1"
-	compile "edu.cmu.sphinx:sphinx4-core:1.0-SNAPSHOT"
-	compile "edu.cmu.sphinx:sphinx4-data:1.0-SNAPSHOT"
+	compile "edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT"
+	compile "edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT"
+	compile group: 'java3d', name: 'vecmath', version: '1.3.1'
+    compile 'org.slf4j:slf4j-simple:1.6.1'
 			
-	compile project(':JCSG')
-	compile project(':CHDK-PTP-Java')
-	compile project(':java-bowler')
-	compile project(':WalnutiQ')
+	compile "com.neuronrobotics:JCSG:0.1.8"
+	compile "com.neuronrobotics:CHDK-PTP-Java:0.5.3-SNAPSHOT"
+	compile "com.neuronrobotics:java-bowler:3.16.6"
+	//compile fileTree (dir: '../java-bowler/build/libs/', includes: ['nrsdk-3.16.4-jar-with-dependencies.jar'])
+	compile "com.neuronrobotics:WalnutiQ:2.3.1"
+	
+	
 	
 	String basedir =System.getenv("OPENCV_DIR")+"/../../java/opencv-249.jar";
 	println("OPENCV_DIR="+basedir);
@@ -162,15 +170,6 @@ dependencies {
 		compile fileTree (dir: '/usr/share/java/', includes: ['*opencv-24*.jar'])
 	}
 	
-//	compile group: 'org.bytedeco', name: 'javacv', version: '0.9';
-//	compile group: 'org.bytedeco', name: 'javacpp', version: '0.9';
-//	 //found at https://github.com/bytedeco/javacv/issues/122
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86";		
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "linux-x86_64";	
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "macosx-x86_64";	
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86";		
-//	compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.9', classifier: "windows-x86_64";
-	
 	compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 	compile group: 'jexcelapi', name: 'jxl', version: '2.4.2'
 	compile group: 'com.google.zxing', name: 'zxing-parent', version: '3.2.0'
@@ -184,9 +183,11 @@ dependencies {
 	compile fileTree (dir: 'libs', includes: ['*.jar'])
 }
 
+
 // create a fat-jar (class files plus dependencies
 // excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
 jar {
+	jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	jar.baseName= "BowlerScriptingKernel";
 	doFirst {
 		
@@ -200,9 +201,6 @@ jar {
 					exclude 'META-INF/*.RSA'
 				}
 	}
-
-	// project class files compiled from source
-	from files(sourceSets.main.output.classesDir)
 
 	manifest {  
 	    attributes(	
@@ -220,6 +218,73 @@ jar {
 		    )
 		}
 }
+
+group = "com.neuronrobotics"
+archivesBaseName = "bowler-script-kernel"
+version = props."app.version"
+
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives javadocJar, sourcesJar, jar
+}
+
+signing {
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+	  mavenDeployer {
+		beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  
+		repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+		  authentication(userName: ossrhUsername, password: ossrhPassword)
+		}
+  
+		snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+		  authentication(userName: ossrhUsername, password: ossrhPassword)
+		}
+  
+		pom.project {
+		  name 'Bowler Scripting Kernel'
+		  packaging 'jar'
+		  // optionally artifactId can be defined here
+		  description 'A command line utility for accsing the bowler framework.'
+		  url 'http://neuronrobotics.com'
+  
+		  scm {
+			connection 			'scm:git:https://github.com/NeuronRobotics/bowler-script-kernel.git'
+			developerConnection 'scm:git:git@github.com:NeuronRobotics/bowler-script-kernel.git'
+			url 'https://github.com/NeuronRobotics/bowler-script-kernel'
+		  }
+  
+		  licenses {
+			license {
+			  name 'The Apache License, Version 2.0'
+			  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+			}
+		  }
+  
+		  developers {
+			developer {
+			  id 'madhephaestus'
+			  name 'Kevin Harrington'
+			  email 'kharrington@neuronrobotics.com'
+			}
+		  }
+		}
+	  }
+	}
+  }
 
 //task run(type: JavaExec) {
 //	classpath = sourceSets.main.runtimeClasspath

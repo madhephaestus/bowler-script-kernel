@@ -4,8 +4,11 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
@@ -14,8 +17,8 @@ import com.neuronrobotics.sdk.common.DeviceManager;
 
 public class GroovyHelper implements IScriptingLanguage{
 
-	@Override
-	public Object inlineScriptRun(String code, ArrayList<Object> args) {
+
+	private Object inline(Object code, ArrayList<Object> args) throws Exception {
 		CompilerConfiguration cc = new CompilerConfiguration();
 		cc.addCompilationCustomizers(new ImportCustomizer()
 				.addStarImports(ScriptingEngine.getImports())
@@ -45,10 +48,18 @@ public class GroovyHelper implements IScriptingLanguage{
 		GroovyShell shell = new GroovyShell(GroovyHelper.class
 				.getClassLoader(), binding, cc);
 		//System.out.println(code + "\n\nStart\n\n");
-		Script script = shell.parse(code);
-
+		Script script;
+		if(String.class.isInstance(code))
+			script = shell.parse((String)code);
+		else if(File.class.isInstance(code))
+			script = shell.parse((File)code);
+		else 
+			return null;
 		return script.run();
+
 	}
+	
+	
 
 	@Override
 	public ShellType getShellType() {
@@ -62,6 +73,20 @@ public class GroovyHelper implements IScriptingLanguage{
 			return true;
 		}
 		return false;
+	}
+
+
+
+	@Override
+	public Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception {
+		return inline(code, args);
+	}
+
+
+
+	@Override
+	public Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception {
+		return inline(code, args);
 	}
 
 }

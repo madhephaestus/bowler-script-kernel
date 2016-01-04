@@ -4,9 +4,41 @@ consists of a modular scripting environment. This engine passes Lists of JVM obj
 
 ##All platforms 
  You need to use the installer from 
+ * [BowlerStudio Installer](https://github.com/NeuronRobotics/BowlerStudio/releases)
  
-# https://github.com/NeuronRobotics/BowlerStudio/releases
+##Usage
+This will let you pass code snippets directly to the scripting engine
+```
+Object returnVal = ScriptingEngine.inlineScriptRun(String code, ArrayList<Object> args,ShellType activeType)
+```
 
+This will let you load code directly out of a github gist:
+This code will load this github gist:
+https://gist.github.com/madhephaestus/d4312a0787456ec27a2a
+
+<script src="https://gist.github.com/madhephaestus/d4312a0787456ec27a2a.js"></script>
+
+```
+Object returnVal = ScriptingEngine.inlineGistScriptRun("d4312a0787456ec27a2a", "helloWorld.groovy" ,null) 
+```
+
+
+
+# Embed as a library in your projects
+##Maven
+```
+<dependency>
+  <groupId>com.neuronrobotics</groupId>
+  <artifactId>BowlerScriptingKernel</artifactId>
+  <version>0.4.28</version>
+</dependency>
+```
+##Gradle
+```
+dependencies {
+ compile "com.neuronrobotics:BowlerScriptingKernel:0.4.28"
+}
+```
 ###Macs Only
 
 In the terminal before running the jar you must run:
@@ -15,9 +47,14 @@ export OPENCV_DIR=<path to yout BowlerStudio.app>BowlerStudio.app/Contents/MacOS
 ```
 ##All platforms 
 ```
-  Usage: java -jar BowlerScriptKernel.jar -s .. # This will load one script after the next
+  Usage: 
+  
+  java -jar BowlerScriptKernel.jar -s .. # This will load one script after the next
 
-  Usage: java -jar BowlerScriptKernel.jar -p .. # This will load one script then take the list of objects returned and pss them to the next script as its 'args' variable
+  java -jar BowlerScriptKernel.jar -p .. # This will load one script then take the list of objects returned and pss them to the next script as its 'args' variable
+  
+  java -jar BowlerScriptKernel.jar -r <Groovy,Clojure,Jython> #Starts a repl fo interactive robot coding
+  
 ```
  
 
